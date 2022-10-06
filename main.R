@@ -43,8 +43,9 @@ new_data <- new_data %>%
         # id variables
         i = R0000100,
         # key outcome variables
-        self_esteem = R0304410,
-        # self_esteem = T0899810,
+        self_esteem1980 = R0304410,
+        self_esteem1987 = R2350010,
+        self_esteem2006 = T0899810,
         # key explanatory variables
         head_start = R4531700,
         pre_school = R4531800,
@@ -55,6 +56,7 @@ new_data <- new_data %>%
         educ_mother = R0006500,
         educ_father = R0007900,
         welfare = G0226400,
+        # observed in 2006
         fam_size = T0987600,
         fam_income = T0987800,
         fam_poverty = T0987900,
@@ -64,8 +66,9 @@ new_data <- new_data %>%
     dplyr::mutate(
         male = ifelse(sex == 1, 1, 0),
         urban = ifelse(urban == 1, 1, 0),
-        married = ifelse(married >= 1, 1, 0),
-        unemployed = ifelse(unemployed >= 1, 1, 0)
+        married = ifelse(married == 1, 1, 0),
+        unemployed = ifelse(unemployed >= 1, 1, 0),
+        any_prek = ifelse(head_start == 1 | pre_school == 1, 1, 0)
     )
 
 print(new_data)
@@ -77,79 +80,61 @@ skimr::skim(new_data)
 
 print("Effect of Head Start on self-reported Self Esteem")
 
-ols1 <- lm(self_esteem ~ head_start, new_data)
-ols2 <- lm(self_esteem ~ head_start + male + urban + unemployed, new_data)
-ols3 <- lm(self_esteem ~ head_start + male + urban + unemployed + married + fam_size, new_data)
-ols4 <- lm(self_esteem ~ head_start + male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
-ols5 <- lm(self_esteem ~ head_start + male + urban + unemployed + married + fam_size + educ_mother + educ_father + welfare + fam_income + fam_poverty, new_data)
+ols1 <- lm(self_esteem2006 ~ head_start, new_data)
+ols2 <- lm(self_esteem2006 ~ head_start + male + urban + unemployed, new_data)
+ols3 <- lm(self_esteem2006 ~ head_start + male + urban + unemployed + married + fam_size, new_data)
+ols4 <- lm(self_esteem2006 ~ head_start + male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
+ols5 <- lm(self_esteem2006 ~ head_start + male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, new_data)
 stargazer::stargazer(ols1, ols2, ols3, ols4, ols5, title="Results", align=TRUE, type="text")
 
 print("Effect of Preschool on self-reported Self Esteem")
 
-ols1 <- lm(self_esteem ~ pre_school, new_data)
-ols2 <- lm(self_esteem ~ pre_school + male + urban + unemployed, new_data)
-ols3 <- lm(self_esteem ~ pre_school + male + urban + unemployed + married + fam_size, new_data)
-ols4 <- lm(self_esteem ~ pre_school + male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
-ols5 <- lm(self_esteem ~ pre_school + male + urban + unemployed + married + fam_size + educ_mother + educ_father + welfare + fam_income + fam_poverty, new_data)
+ols1 <- lm(self_esteem2006 ~ pre_school, new_data)
+ols2 <- lm(self_esteem2006 ~ pre_school + male + urban + unemployed, new_data)
+ols3 <- lm(self_esteem2006 ~ pre_school + male + urban + unemployed + married + fam_size, new_data)
+ols4 <- lm(self_esteem2006 ~ pre_school + male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
+ols5 <- lm(self_esteem2006 ~ pre_school + male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, new_data)
 stargazer::stargazer(ols1, ols2, ols3, ols4, ols5, title="Results", align=TRUE, type="text")
 
-# drop welfare variable
+print("Effect of Any pre-K (either Preschool or Head Start) on self-reported Self Esteem")
 
-print("Effect of Head Start on self-reported Self Esteem (omit welfare variable)")
-
-ols1 <- lm(self_esteem ~ head_start, new_data)
-ols2 <- lm(self_esteem ~ head_start + male + urban + unemployed, new_data)
-ols3 <- lm(self_esteem ~ head_start + male + urban + unemployed + married + fam_size, new_data)
-ols4 <- lm(self_esteem ~ head_start + male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
-ols5 <- lm(self_esteem ~ head_start + male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, new_data)
+ols1 <- lm(self_esteem2006 ~ any_prek, new_data)
+ols2 <- lm(self_esteem2006 ~ any_prek + male + urban + unemployed, new_data)
+ols3 <- lm(self_esteem2006 ~ any_prek + male + urban + unemployed + married + fam_size, new_data)
+ols4 <- lm(self_esteem2006 ~ any_prek + male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
+ols5 <- lm(self_esteem2006 ~ any_prek + male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, new_data)
 stargazer::stargazer(ols1, ols2, ols3, ols4, ols5, title="Results", align=TRUE, type="text")
 
-print("Effect of Preschool on self-reported Self Esteem (omit welfare variable)")
-
-ols1 <- lm(self_esteem ~ pre_school, new_data)
-ols2 <- lm(self_esteem ~ pre_school + male + urban + unemployed, new_data)
-ols3 <- lm(self_esteem ~ pre_school + male + urban + unemployed + married + fam_size, new_data)
-ols4 <- lm(self_esteem ~ pre_school + male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
-ols5 <- lm(self_esteem ~ pre_school + male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, new_data)
-stargazer::stargazer(ols1, ols2, ols3, ols4, ols5, title="Results", align=TRUE, type="text")
 
 ### idea: interactions or estimate model on subsets
 
-estim_head_start <- function(data) {
-    ols1 <- lm(self_esteem ~ head_start, data)
-    ols2 <- lm(self_esteem ~ head_start + male + urban + unemployed, data)
-    ols3 <- lm(self_esteem ~ head_start + male + urban + unemployed + married + fam_size, data)
-    ols4 <- lm(self_esteem ~ head_start + male + urban + unemployed + married + fam_size + educ_mother + educ_father, data)
-    ols5 <- lm(self_esteem ~ head_start + male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, data)
-    stargazer::stargazer(ols1, ols2, ols3, ols4, ols5, title="Results", align=TRUE, type="text")
-}
+print("Effect of Head Start on self-reported Self Esteem (male*head_start interaction)")
 
-estim_pre_school <- function(data) {
-    ols1 <- lm(self_esteem ~ pre_school, data)
-    ols2 <- lm(self_esteem ~ pre_school + male + urban + unemployed, data)
-    ols3 <- lm(self_esteem ~ pre_school + male + urban + unemployed + married + fam_size, data)
-    ols4 <- lm(self_esteem ~ pre_school + male + urban + unemployed + married + fam_size + educ_mother + educ_father, data)
-    ols5 <- lm(self_esteem ~ pre_school + male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, data)
-    stargazer::stargazer(ols1, ols2, ols3, ols4, ols5, title="Results", align=TRUE, type="text")
-}
-
-print("Effect of Head Start on self-reported Self Esteem (male / female interaction)")
-
-ols1 <- lm(self_esteem ~ head_start, new_data)
-ols2 <- lm(self_esteem ~ head_start*male + urban + unemployed, new_data)
-ols3 <- lm(self_esteem ~ head_start*male + urban + unemployed + married + fam_size, new_data)
-ols4 <- lm(self_esteem ~ head_start*male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
-ols5 <- lm(self_esteem ~ head_start*male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, new_data)
+ols1 <- lm(self_esteem2006 ~ head_start, new_data)
+ols2 <- lm(self_esteem2006 ~ head_start*male + urban + unemployed, new_data)
+ols3 <- lm(self_esteem2006 ~ head_start*male + urban + unemployed + married + fam_size, new_data)
+ols4 <- lm(self_esteem2006 ~ head_start*male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
+ols5 <- lm(self_esteem2006 ~ head_start*male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, new_data)
 stargazer::stargazer(ols1, ols2, ols3, ols4, ols5, title="Results", align=TRUE, type="text")
 
-print("Effect of Preschool on self-reported Self Esteem (male / female interaction)")
+print("Effect of Preschool on self-reported Self Esteem (male*pre_school interaction)")
 
-ols1 <- lm(self_esteem ~ pre_school, new_data)
-ols2 <- lm(self_esteem ~ pre_school*male + urban + unemployed, new_data)
-ols3 <- lm(self_esteem ~ pre_school*male + urban + unemployed + married + fam_size, new_data)
-ols4 <- lm(self_esteem ~ pre_school*male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
-ols5 <- lm(self_esteem ~ pre_school*male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, new_data)
+ols1 <- lm(self_esteem2006 ~ pre_school, new_data)
+ols2 <- lm(self_esteem2006 ~ pre_school*male + urban + unemployed, new_data)
+ols3 <- lm(self_esteem2006 ~ pre_school*male + urban + unemployed + married + fam_size, new_data)
+ols4 <- lm(self_esteem2006 ~ pre_school*male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
+ols5 <- lm(self_esteem2006 ~ pre_school*male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, new_data)
 stargazer::stargazer(ols1, ols2, ols3, ols4, ols5, title="Results", align=TRUE, type="text")
+
+print("Effect of Any pre-K (either Preschool or Head Start) on self-reported Self Esteem (male*any_prek interaction)")
+
+ols1 <- lm(self_esteem2006 ~ any_prek, new_data)
+ols2 <- lm(self_esteem2006 ~ any_prek*male + urban + unemployed, new_data)
+ols3 <- lm(self_esteem2006 ~ any_prek*male + urban + unemployed + married + fam_size, new_data)
+ols4 <- lm(self_esteem2006 ~ any_prek*male + urban + unemployed + married + fam_size + educ_mother + educ_father, new_data)
+ols5 <- lm(self_esteem2006 ~ any_prek*male + urban + unemployed + married + fam_size + educ_mother + educ_father + fam_income + fam_poverty, new_data)
+stargazer::stargazer(ols1, ols2, ols3, ols4, ols5, title="Results", align=TRUE, type="text")
+
 
 # consider 2006 self esteem in a separate model
 # interpolation from 1980->2006
